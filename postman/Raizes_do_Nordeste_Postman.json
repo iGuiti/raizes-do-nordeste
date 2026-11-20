@@ -17,7 +17,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"nome\": \"Guilherme\",\r\n  \"email\": \"guilherme.sousa@gmail.com\",\r\n  \"senha\": \"Teste@123\",\r\n  \"telefone\": \"16999999998\"\r\n}",
+              "raw": "{\r\n  \"nome\": \"Usuario Teste\",\r\n  \"email\": \"teste@gmail.com\",\r\n  \"senha\": \"Teste@123\",\r\n  \"telefone\": \"16999999999\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -83,7 +83,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -122,7 +122,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -175,7 +175,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cozinha}}",
                   "type": "string"
                 }
               ]
@@ -192,7 +192,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/pedidos/5/status",
+              "raw": "http://localhost:8080/api/pedidos/{{id_pedido}}/status",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -201,7 +201,7 @@
               "path": [
                 "api",
                 "pedidos",
-                "5",
+                "{{id_pedido}}",
                 "status"
               ]
             }
@@ -216,7 +216,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -255,7 +255,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -295,9 +295,6 @@
         {
           "name": "http://localhost:8080/api/pedidos",
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
             "method": "GET",
             "header": [],
             "url": {
@@ -329,7 +326,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -346,7 +343,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/pedidos/1/status",
+              "raw": "http://localhost:8080/api/pedidos/{{id_pedido}}/status",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -355,7 +352,7 @@
               "path": [
                 "api",
                 "pedidos",
-                "1",
+                "{{id_pedido}}",
                 "status"
               ]
             }
@@ -370,7 +367,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -404,6 +401,16 @@
         {
           "name": "http://localhost:8080/api/pedidos",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_cliente}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -426,16 +433,6 @@
                 "api",
                 "pedidos"
               ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token_jwt}}",
-                  "type": "string"
-                }
-              ]
             }
           },
           "response": []
@@ -448,7 +445,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{token_jwt}}",
+                  "value": "{{token_cliente}}",
                   "type": "string"
                 }
               ]
@@ -484,9 +481,16 @@
   ],
   "variable": [
     {
-      "key": "token_jwt",
-      "value": "",
-      "type": "string"
+      "key": "token_cliente",
+      "value": ""
+    },
+    {
+      "key": "token_cozinha",
+      "value": ""
+    },
+    {
+      "key": "id_pedido",
+      "value": ""
     }
   ]
 }

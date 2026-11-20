@@ -86,7 +86,15 @@ $env:DB_PASSWORD="SUA_SENHA_DO_MYSQL"
 $env:JWT_SECRET="SUA_CHAVE_JWT"
 ```
 
-> A chave JWT deve ser compatível com o algoritmo e com a forma de carregamento utilizados pela implementação da aplicação. Utilize uma chave forte e não reutilize exemplos públicos.
+> A implementação decodifica `JWT_SECRET` em Base64 e utiliza HMAC. Gere uma chave aleatória de pelo menos 32 bytes antes da codificação, por exemplo com o PowerShell abaixo. Não reutilize chaves públicas nem publique o valor gerado.
+
+```powershell
+$bytes = New-Object byte[] 32
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+$rng.Dispose()
+```
 
 ## 6. Compilar e executar a aplicação
 
@@ -124,24 +132,33 @@ Esses endereços são locais: para acessá-los, a aplicação precisa estar em e
 A coleção está disponível em:
 
 ```text
-postman/Raizes do nordeste - API.postman_collection.json
+postman/Raizes_do_Nordeste_Postman.json
 ```
 
 Para reproduzir as chamadas:
 
-1. Inicie a aplicação e confirme que o banco foi preparado.
+1. Inicie a aplicação e confirme que o banco e os dados iniciais foram preparados.
 2. Abra o Postman e importe o arquivo JSON da pasta `postman/`.
-3. Execute o endpoint de cadastro (`POST /api/auth/cadastro`) com dados fictícios de teste.
-4. Execute o login (`POST /api/auth/login`) com as credenciais cadastradas.
-5. Copie o JWT retornado pelo login e informe-o na variável `token_jwt` da coleção Postman.
-6. Execute as requisições autenticadas de pedidos e as consultas.
-7. Para testar a atualização de status, utilize um usuário com perfil autorizado para essa operação (por exemplo, `COZINHA`, `ADMIN` ou `GERENTE`).
+3. Execute `POST /api/auth/cadastro` para cadastrar o usuário de teste `teste@gmail.com`.
+4. Execute `POST /api/auth/login` com o mesmo e-mail e a senha cadastrada. Copie o JWT retornado e preencha a variável `token_cliente` nas variáveis da Collection.
+5. Para testar a atualização autorizada de status, cadastre um segundo usuário pela API, utilizando um e-mail diferente, por exemplo `cozinha.teste@raizes.com`.
+6. Como o cadastro público cria usuários com perfil `CLIENTE`, altere o perfil desse segundo usuário para `COZINHA` no banco de testes, executando no MySQL Workbench:
 
-A coleção contempla requisições de autenticação, criação e consulta de pedidos, atualização de status e cenários de validação/erro. Os resultados esperados e as evidências das execuções realizadas estão apresentados no relatório do projeto.
+```sql
+UPDATE usuario
+SET perfil = 'COZINHA'
+WHERE email = 'cozinha.teste@raizes.com';
+```
+
+7. Faça login com o segundo usuário e preencha a variável `token_cozinha` com o JWT retornado.
+8. Execute a requisição de criação de pedido com pagamento aprovado (`simularFalha: false`). Copie o campo `idPedido` da resposta e informe seu valor na variável `id_pedido` da Collection.
+9. Utilize `token_cozinha` na requisição PATCH autorizada e `token_cliente` na requisição PATCH que verifica a resposta 403. A requisição de consulta sem autenticação permanece configurada como `No Auth`.
+
+A Collection utiliza as variáveis `token_cliente`, `token_cozinha` e `id_pedido`. Os valores devem ser preenchidos no Postman durante a execução e não devem ser exportados com tokens reais. A coleção contempla autenticação, criação e consulta de pedidos, atualização de status e cenários de validação/erro. Os resultados esperados e as evidências das execuções realizadas estão apresentados no relatório do projeto.
 
 ### Observação sobre os dados de teste
 
-O script de dados iniciais prepara a unidade e o produto usados nos exemplos da coleção. O usuário/cliente deve ser cadastrado pela própria API. Para testar operações restritas por perfil, é necessário utilizar um usuário cujo perfil esteja autorizado pela configuração de segurança da aplicação.
+O script `database/testes.sql` prepara a unidade e o produto utilizados nos exemplos. O usuário/cliente é cadastrado pela própria API, que armazena a senha utilizando BCrypt e define inicialmente o perfil `CLIENTE`. A alteração para `COZINHA` descrita acima é uma preparação manual do ambiente de testes, necessária para reproduzir o cenário de autorização da Collection; ela não faz parte do cadastro público da aplicação.
 
 ## 9. Principais endpoints do fluxo implementado
 
@@ -162,7 +179,7 @@ raizes-do-nordeste/
 ├── database/
 │   └── testes.sql
 ├── postman/
-│   └── Raizes do Nordeste - API.postman_collection.json
+│   └── Raizes_do_Nordeste_Postman.json
 ├── src/
 │   ├── main/
 │   │   ├── java/
