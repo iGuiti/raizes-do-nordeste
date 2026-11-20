@@ -1,0 +1,14 @@
+
+# Maven
+target/
+
+# Variáveis e credenciais
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Eclipse
+.settings/
